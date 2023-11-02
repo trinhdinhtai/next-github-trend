@@ -1,15 +1,21 @@
-import { headers } from "next/headers"
+import CurrentWeather from "@/components/current-weather"
 
-import { getWeatherData } from "@/lib/weather"
-import PageData from "@/components/page-data"
+interface SearchParamsProps {
+  lat: string
+  lon: string
+}
 
-export const runtime = "edge"
+interface SearchPageProps {
+  readonly searchParams: Readonly<SearchParamsProps>
+}
 
-export default async function Home() {
-  const parsedCity = headers().get("x-vercel-ip-city")
-  const city = !parsedCity || parsedCity === "null" ? "Hanoi" : parsedCity
-
-  const weatherData = await getWeatherData(city)
-
-  return <PageData weatherData={weatherData} />
+export default async function Home({ searchParams }: SearchPageProps) {
+  const { lat, lon } = searchParams
+  return (
+    <div className="container flex flex-col gap-4 py-4 md:flex-row">
+      <div className="flex w-full min-w-[18rem] flex-col gap-4 md:w-1/2">
+        <CurrentWeather />
+      </div>
+    </div>
+  )
 }

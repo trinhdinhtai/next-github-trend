@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete"
 
-import { DEFAULT_SUGGESTIONS } from "@/lib/config"
+import { useWeatherStore } from "@/hooks/use-weather-store"
 import { Button } from "@/components/ui/button"
 import {
   CommandDialog,
@@ -21,6 +21,9 @@ import {
 export default function CityCommandDialog() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
+
+  const { city, setLatAndLng, setCity } = useWeatherStore()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -49,7 +52,21 @@ export default function CityCommandDialog() {
 
   const handleSelect =
     ({ description }: any) =>
-    () => {}
+    () => {
+      // When the user selects a place, we can replace the keyword without request data from API by setting the second parameter to "false"
+      setCity(description)
+      setValue(description, false)
+
+      setOpen(false)
+      setValue("")
+      clearSuggestions()
+
+      getGeocode({ address: description }).then((results) => {
+        const { lat, lng } = getLatLng(results[0])
+        setLatAndLng(lat.toString(), lng.toString())
+        router.push(`${pathname}?lat=${lat}&lon=${lng}`)
+      })
+    }
 
   return (
     <div>
@@ -60,7 +77,7 @@ export default function CityCommandDialog() {
         className="h-10 w-full whitespace-nowrap px-4"
       >
         <p className="text-sm text-muted-foreground">
-          Search city...{" "}
+          {city ?? "Search city..."}{" "}
           <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 hover:bg-primary md:ml-28">
             <span className="text-xs">⌘</span>K
           </kbd>
@@ -68,20 +85,26 @@ export default function CityCommandDialog() {
       </Button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search city..." />
+        <CommandInput
+          placeholder="Search city..."
+          value={value}
+          onValueChange={setValue}
+          disabled={!ready}
+        />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            {!data.length && (
-              <>
-                {DEFAULT_SUGGESTIONS.map((suggestion, i) => (
-                  <CommandItem key={i} onSelect={handleSelect(suggestion)}>
-                    {suggestion.description}
-                  </CommandItem>
-                ))}
-              </>
-            )}
-          </CommandGroup>
+          {status === "OK" && (
+            <CommandGroup heading="Suggestions">
+              {data.map((suggestion) => (
+                <CommandItem
+                  key={suggestion.place_id}
+                  onSelect={handleSelect(suggestion)}
+                >
+                  {suggestion.description}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
         </CommandList>
       </CommandDialog>
     </div>
