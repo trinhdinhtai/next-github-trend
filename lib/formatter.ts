@@ -1,11 +1,10 @@
-export function convertToDate(
-  timezone: number,
-  dt: number,
+// convert local date to date javascript
+// example: localtime: '2023-11-06 13:41' to Monday
+export function convertToLocalDate(
+  localtime: string,
   weekdayFormat: "short" | "long"
 ): string {
-  let utc_time = new Date(dt * 1000)
-  let local_time = new Date(utc_time.getTime() + timezone * 1000)
-
+  let local_time = new Date(localtime)
   const options = { weekday: weekdayFormat }
   const dateFormatter = new Intl.DateTimeFormat("UTC", options)
 
