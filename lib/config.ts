@@ -21,7 +21,7 @@ export const DEFAULT_SUGGESTIONS = [
 export const DEFAULT_LOCATION: Location = {
   city: "Hà Nội",
   coord: {
-    lat: "55.6760968",
-    lon: "12.5683371",
+    lat: "21.03",
+    lon: "105.85",
   },
 }

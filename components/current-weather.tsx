@@ -1,21 +1,22 @@
 import Image from "next/image"
+import { Weather } from "@/types"
 
 import { convertToLocalDate } from "@/lib/formatter"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import Clock from "@/components/clock"
 
 interface CurrentWeatherProps {
-  data: any
+  weather: Weather
 }
 
 export default function CurrentWeather({
-  data,
+  weather,
 }: Readonly<CurrentWeatherProps>) {
-  const { name, tz_id, localtime } = data.location
+  const { name, tz_id, localtime } = weather.location
   const {
     temp_c,
     condition: { text, icon },
-  } = data.current
+  } = weather.current
 
   return (
     <Card className="relative flex h-fit w-full shrink-0 flex-col justify-between overflow-hidden">
