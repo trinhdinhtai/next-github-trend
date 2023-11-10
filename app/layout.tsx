@@ -3,14 +3,12 @@ import { TailwindIndicator } from "@/components/tailwind-indicator"
 import "./globals.css"
 
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import Script from "next/script"
+import { GeistSans } from "geist/font/sans"
 
 import { cn } from "@/lib/utils"
 import Navbar from "@/components/layout/navbar"
 import { ThemeProvider } from "@/components/providers/theme-provider"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn(inter.className, "min-h-screen font-sans antialiased")}
+        className={cn(
+          GeistSans.className,
+          "min-h-screen font-sans antialiased"
+        )}
       >
         <ThemeProvider
           attribute="class"
